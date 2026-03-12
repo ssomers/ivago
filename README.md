@@ -1,0 +1,7 @@
+- download pick-up-calendar-03-20XX.ics from ivago.be
+- pip install vobject
+- convert with this script
+- upload to task list at app.mailbox.org
+- enable sync in DavX
+- select all in tasks.org app, move to local list
+- disable sync in DavX

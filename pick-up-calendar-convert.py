@@ -1,8 +1,12 @@
 from datetime import timedelta
 import vobject
+import sys
 
-path_in = "pick-up-calendar.ics"
-path_out = "pick-up-todos.ics"
+path_in = sys.argv[1]
+path_out = path_in.replace("calendar", "todos")
+if path_in == path_out:
+    print("wa est?")
+    sys.exit(1)
 
 with open(path_in, "r") as f:
     source = vobject.readOne(f.read())
