@@ -1,30 +1,35 @@
-from datetime import timedelta
+import collections
+import datetime
 import vobject
 import sys
 
-path_in = sys.argv[1]
-path_out = path_in.replace("calendar", "todos")
+path_in: str = sys.argv[1]
+path_out: str = path_in.replace("-calendar-", "-todos-")
 if path_in == path_out:
-    print("wa est?")
+    print("geen -calendar- in pad!?")
     sys.exit(1)
 
-with open(path_in, "r") as f:
-    source = vobject.readOne(f.read())
 todos = vobject.iCalendar()
-for event in source.components():
-    summary = event.summary.value
-    dtstart = event.dtstart.value
-    if summary in ["GLAS", "PAPIER", "PMD", "RESTAFVAL"]:
-        todo = todos.add('vtodo')
-        todo.add("uid").value = event.uid.value
-        todo.add("summary").value = summary
-        todo.add("dtstart").value = dtstart - timedelta(days=1)
-        todo.add("due").value = dtstart
-    elif summary not in ["GFT", "GROFVUIL", "KERSTBOMEN"]:
-        print(f"Onbekend type \"{summary}\" overgeslagen")
+with open(path_in, "r") as f:
+    calendar = vobject.readOne(f.read())
+for event in calendar.components():
+    match event.summary.value:
+        case "GLAS" | "PAPIER" | "PMD" | "RESTAFVAL":
+            todo = todos.add("vtodo")
+            todo.add(event.uid)
+            todo.add(event.summary)
+            dtstart = event.dtstart.value
+            todo.add("dtstart").value = dtstart - datetime.timedelta(days=1)
+            todo.add("due").value = dtstart
+        case "GFT" | "GROFVUIL" | "KERSTBOMEN":
+            pass
+        case who:
+            print(f'Onbekende soort "{who}"')
 
-count = sum(1 for _ in todos.components())
-if count:
-    with open(path_out, "w") as f:
+counts = collections.Counter([c.summary.value for c in todos.components()])
+if counts:
+    with open(path_out, "w", newline="\n") as f:
         f.write(todos.serialize())
-print(f"{count} todo's geschreven in {path_out}")
+    print(f"{path_out}:")
+    for summary, count in counts.most_common():
+        print(f"\t{count} {summary}")

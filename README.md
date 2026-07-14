@@ -1,6 +1,6 @@
-- download pick-up-calendar-03-20XX.ics from ivago.be
-- pip install vobject
-- convert with this script
+- download pick-up-calendar-03-20XX.ics from https://www.ivago.be/nl/particulier/afval/ophaling
+- `pip install --upgrade vobject types-vobject`
+- `python pick-up-calendar-convert.py <path-to-downloaded-file>`
 - upload to task list at app.mailbox.org
 - enable sync in DavX
 - select all in tasks.org app, move to local list
